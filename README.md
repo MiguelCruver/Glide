@@ -80,10 +80,14 @@
 
 ## 🚀 Como Executar
 
-### Opção 1: Executável Standalone (Recomendado)
-Você não precisa ter o .NET SDK ou runtime instalado:
-1. Baixe o executável `Glide.App.exe` na aba de [Releases](https://github.com/MiguelCruver/Glide/releases/latest).
-2. Dê 2 cliques no arquivo baixado. O Glide inicializará imediatamente.
+### Opção 1: Instalador Oficial do Windows (Recomendado)
+Você não precisa ter o .NET SDK ou qualquer ferramenta instalada:
+1. Baixe o instalador oficial `Glide-Setup-v2.0.0.exe` na aba de [Releases](https://github.com/MiguelCruver/Glide/releases/latest).
+2. Execute o instalador e siga o assistente passo a passo (**Avançar > Instalar**).
+3. O instalador cria automaticamente os atalhos na Área de Trabalho e no Menu Iniciar e já abre o Glide pronto para uso.
+
+### Opção 2: Executável Portátil (Portable Standalone)
+* Caso prefira rodar sem instalar nada no Windows, baixe `Glide.App.exe` diretamente na aba de Releases.
 
 ### Opção 2: Compilar a partir do Código-Fonte
 Para desenvolvedores e colaboradores que desejam compilar o projeto localmente:

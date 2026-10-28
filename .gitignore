@@ -4,6 +4,7 @@ obj/
 publish/
 publish_latest/
 release_standalone/
+installer_output/
 *.user
 *.suo
 *.userosscache
