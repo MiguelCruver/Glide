@@ -1,0 +1,154 @@
+<UserControl x:Class="Glide.App.Views.AudioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="900"
+             Loaded="UserControl_Loaded">
+    <Grid Margin="24,18,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Barra Superior de Controle de Áudio -->
+        <Border Grid.Row="0" Style="{StaticResource GlideCardBorderStyle}" Padding="12,10" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Seletor de Provedores: YouTube Music e Spotify -->
+                <Border Grid.Column="0" Background="#101724" BorderBrush="{StaticResource GlideBorderBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="3" Margin="0,0,16,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="YtMusicTabBtn" Content="🎵 YouTube Music"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Height="28" FontSize="11" Padding="12,0" Margin="0,0,4,0"
+                                Click="YtMusicTabBtn_Click" />
+                        <Button x:Name="SpotifyTabBtn" Content="🎧 Spotify"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Height="28" FontSize="11" Padding="12,0"
+                                Click="SpotifyTabBtn_Click" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Status do Provedor Ativo -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="ProviderNameTxt" Text="YouTube Music" Foreground="{StaticResource GlideTextPrimaryBrush}"
+                               FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <Border Background="#1A2D28" BorderBrush="{StaticResource GlideAccentMintBrush}"
+                            BorderThickness="1" CornerRadius="10" Padding="8,2" VerticalAlignment="Center" Margin="0,0,12,0">
+                        <TextBlock Text="ATIVO" Foreground="{StaticResource GlideAccentMintBrush}" FontSize="10" FontWeight="Bold" />
+                    </Border>
+                    <TextBlock Text="Suporte a login e reprodução em segundo plano."
+                               Foreground="{StaticResource GlideTextMutedBrush}" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Ações: Alternar Modo Eco / Destacar Miniplayer -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="EcoModeToggleBtn" Content="🌿 Alternar Modo Eco"
+                            Style="{StaticResource SecondaryButtonStyle}" FontSize="11" Padding="12,5" Margin="0,0,8,0"
+                            Click="EcoModeToggleBtn_Click" />
+                    <Button Content="🗗 Destacar Miniplayer"
+                            Style="{StaticResource PrimaryButtonStyle}" FontSize="11" Padding="12,5"
+                            Click="MiniPlayerBtn_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Área de Conteúdo (Alternável entre WebView2 e Painel Eco Nativo) -->
+        <Grid Grid.Row="1">
+            <!-- 1. WebView2 Oficial do YouTube Music -->
+            <Border x:Name="WebContainer" Style="{StaticResource GlideCardBorderStyle}" Padding="0" ClipToBounds="True" Background="#000000" Visibility="Visible">
+                <Grid>
+                    <wv2:WebView2 x:Name="AudioWebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                    <!-- Loading Indicator -->
+                    <Border x:Name="AudioLoadingOverlay" Background="#0C1017" Visibility="Visible">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <ProgressBar IsIndeterminate="True" Width="180" Height="4" Foreground="{StaticResource GlideAccentMintBrush}"
+                                         Background="#1A2332" BorderThickness="0" Margin="0,0,0,12" />
+                            <TextBlock Text="Carregando YouTube Music..." Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="12" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- 2. Painel Nativo do Modo Eco (Áudio em background, sem renderização visual pesada) -->
+            <Border x:Name="EcoContainer" Style="{StaticResource GlideCardBorderStyle}" Padding="24" Visibility="Collapsed">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Banner de Modo Eco Ativo -->
+                    <Border Grid.Row="0" Background="#13241F" BorderBrush="{StaticResource GlideAccentMintBrush}"
+                            BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,24">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="🌿 MODO ECO ÁUDIO ATIVADO" Foreground="{StaticResource GlideAccentMintBrush}" FontSize="12" FontWeight="Bold" />
+                                <TextBlock Text="A interface gráfica do navegador está suspensa para poupar 100% da renderização na Radeon RX 7600. O áudio segue tocando normalmente."
+                                           Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="11" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Ver Tela do YouTube Music" Style="{StaticResource SecondaryButtonStyle}"
+                                    FontSize="11" Padding="10,4" Click="EcoModeToggleBtn_Click" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Player Central -->
+                    <Grid Grid.Row="1" VerticalAlignment="Center">
+                        <StackPanel HorizontalAlignment="Center" MaxWidth="500">
+                            <!-- Logo / Capa Fluida -->
+                            <Border Width="100" Height="100" CornerRadius="16" Background="#131B27"
+                                    BorderBrush="{StaticResource GlideBorderBrush}" BorderThickness="1"
+                                    HorizontalAlignment="Center" Margin="0,0,0,18">
+                                <Image Source="pack://application:,,,/Glide.App;component/Assets/glide-logo.png" Width="64" Height="64"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+
+                            <TextBlock Text="{Binding Main.CurrentTrack.Title}" Foreground="{StaticResource GlideTextPrimaryBrush}"
+                                       FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,4" TextAlignment="Center" />
+                            <TextBlock Text="{Binding Main.CurrentTrack.Artist}" Foreground="{StaticResource GlideAccentMintBrush}"
+                                       FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,20" TextAlignment="Center" />
+
+                            <!-- Controles Vetoriais de Alta Nitidez -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,24">
+                                <Button Width="44" Height="44" Style="{StaticResource SecondaryButtonStyle}"
+                                        Padding="0" Margin="0,0,12,0" Click="PreviousBtn_Click" ToolTip="Faixa Anterior">
+                                    <Path Data="{StaticResource GeoPrev}" Fill="{StaticResource GlideTextPrimaryBrush}" Width="15" Height="15" Stretch="Uniform" />
+                                </Button>
+                                <Button Width="56" Height="56" Style="{StaticResource PrimaryButtonStyle}"
+                                        Padding="0" Margin="0,0,12,0" Click="PlayPauseBtn_Click" ToolTip="Reproduzir / Pausar">
+                                    <Path Data="{Binding Main.PlayPauseIconGeometry}" Fill="#0B0E14" Width="18" Height="18" Stretch="Uniform" />
+                                </Button>
+                                <Button Width="44" Height="44" Style="{StaticResource SecondaryButtonStyle}"
+                                        Padding="0" Click="NextBtn_Click" ToolTip="Próxima Faixa">
+                                    <Path Data="{StaticResource GeoNext}" Fill="{StaticResource GlideTextPrimaryBrush}" Width="15" Height="15" Stretch="Uniform" />
+                                </Button>
+                            </StackPanel>
+
+                            <!-- Volume -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Path Data="{StaticResource GeoVolume}" Fill="{StaticResource GlideTextSecondaryBrush}" Width="14" Height="14" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <Slider Width="140" Value="{Binding Volume}" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Volume, StringFormat={}{0}%}" Foreground="{StaticResource GlideTextMutedBrush}"
+                                           FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
