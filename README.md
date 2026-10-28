@@ -20,16 +20,36 @@
   <p align="center">
     <a href="https://github.com/MiguelCruver/Glide/releases/latest"><b>Baixar a Versão Mais Recente (v2.0) »</b></a>
     ·
+    <a href="#demonstracao">Demonstração Visual</a>
+    ·
     <a href="#funcionalidades">Funcionalidades</a>
     ·
     <a href="#como-compilar">Como Compilar</a>
     ·
     <a href="#arquitetura">Arquitetura</a>
   </p>
+
+  <br />
+
+  <img src="assets/screenshots/glide-home.png" alt="Glide Gaming Companion Hub — Tela Inicial" width="920" />
 </div>
 
 ---
 
+<a name="demonstracao"></a>
+## 📸 Demonstração Visual das Abas
+
+| 🏠 Tela Inicial (Hero & Conexões) | 💬 Glide Connect (Rede P2P) |
+| :---: | :---: |
+| <img src="assets/screenshots/glide-home.png" width="450" /> | <img src="assets/screenshots/glide-connect.png" width="450" /> |
+
+| 🔔 Central de Notificações Unificada | ⚙️ Configurações & Isolamento de Segurança |
+| :---: | :---: |
+| <img src="assets/screenshots/glide-notifications.png" width="450" /> | <img src="assets/screenshots/glide-settings.png" width="450" /> |
+
+---
+
+<a name="funcionalidades"></a>
 ## ⚡ Principais Funcionalidades
 
 ### 🌐 1. Glide Connect (Rede P2P em Tempo Real)
