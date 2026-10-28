@@ -49,7 +49,7 @@
       const response = await fetch(config.releaseApiUrl, { signal: AbortSignal.timeout(5000), headers: { Accept: 'application/vnd.github+json' } });
       if (!response.ok) return;
       const release = await response.json();
-      if (!release.draft && !release.prerelease && release.assets?.some(asset =>
+      if (!release.draft && release.assets?.some(asset =>
         asset.name === config.assetName && asset.state === 'uploaded' && asset.size > 0 &&
         asset.browser_download_url?.startsWith('https://github.com/MiguelCruver/Glide/releases/download/')
       )) enableDownload();
