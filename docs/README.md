@@ -30,23 +30,25 @@ As capturas do app permanecem intactas. Clique em “Ampliar imagem” e depois 
 
 O efeito de perspectiva move logo, painéis e reflexos em camadas CSS 3D. Não é um modelo volumétrico da logo. Funciona pelo cursor e pelas setas com a cena em foco. O controle “Efeito 3D interativo” permite pausar ou ativar o movimento. Por escolha explícita do criador, a interação 3D inicia ligada e pode ser pausada pelo controle. A preferência de reduzir movimentos continua desativando a animação automática de entrada. Não há movimento contínuo.
 
-## Download do app: pendente
+## Download do app
 
-O instalador não foi fornecido e não foi verificado no repositório privado. O botão exibe um aviso claro de preparação, sem simular download. Quando existir um instalador público, preencha `downloadUrl` em `config.js` com seu endereço HTTPS. O aviso de preparação será substituído automaticamente pelo fluxo real.
+Configurado para `Glide-Setup-v2.0.0.exe`, disponível na release pública `v2.0.0` (pré-lançamento). O site verifica esse arquivo pela API pública do GitHub e libera o botão quando a verificação tem sucesso. Em caso de indisponibilidade, mantém o aviso de preparação.
 
-Um arquivo em repositório privado não fica acessível ao público somente por colocar seu endereço no botão. Revise o instalador, a versão e os sistemas suportados antes de disponibilizá-lo.
+O endereço é fixo nessa versão, pois `/releases/latest/` não seleciona pré-lançamentos. Para outra versão, atualize `downloadUrl`, `releaseApiUrl` e `assetName` em `config.js`.
 
 ## Publicação no GitHub Pages
 
-Este projeto foi preparado localmente e não foi publicado nem enviado para um repositório remoto. Para publicar posteriormente, coloque **o conteúdo desta pasta** na raiz de um repositório e configure o GitHub Pages para usar a raiz da branch desejada. Todos os caminhos de arquivos são relativos, permitindo hospedagem em um subdiretório de projeto. Inclui `.nojekyll`.
+Site público: https://miguelcruver.github.io/Glide/
 
-A disponibilidade de Pages para repositórios privados depende do plano do GitHub. O site pode ficar em um repositório separado do código privado do app.
+Código do site em `docs/` no repositório `MiguelCruver/Glide`, branch `master`. O workflow `.github/workflows/pages.yml` publica essa pasta pelo GitHub Actions. A configuração Source do GitHub Pages deve permanecer em GitHub Actions. Mudanças nos arquivos do site nessa branch acionam nova publicação.
+
+Todos os caminhos de assets são relativos, permitindo hospedagem em `/Glide/`. A pasta inclui `.nojekyll`. O código do aplicativo foi preservado.
 
 ## Conteúdo e privacidade
 
 As descrições se baseiam nas telas fornecidas. Não são prometidos números de desempenho, certificações, criptografia validada ou integrações verificadas em execução. A vitrine identifica as imagens como capturas do app, não como uma execução do programa no navegador.
 
-O site não inclui analytics, formulários, cookies próprios, chamadas a APIs ou cadastro. Fonte e imagens são servidas localmente. A hospedagem escolhida pode manter seus próprios registros de acesso.
+O site não inclui analytics, formulários, cookies próprios ou cadastro. Consulta a API pública do GitHub uma vez por carregamento para verificar o instalador configurado. Fonte e imagens são servidas localmente. A hospedagem escolhida pode manter seus próprios registros de acesso.
 
 ## Assets e licença
 

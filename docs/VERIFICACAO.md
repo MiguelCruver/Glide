@@ -48,3 +48,11 @@ A limitação anterior sobre falta de verificação da perspectiva foi resolvida
 - Em 768 px, texto e cena ocupam colunas de 334,5 px, separadas por 20 px, sem sobreposição dos blocos.
 - Oito cenários de teste de ativação padrão, interação, pausa e centralização passaram. Sintaxe do JavaScript conferida. No navegador, o estado ativo foi confirmado logo após recarregar, e as setas produziram rotação 3D sem ativação manual.
 - Removido o desfoque de fundo dos pequenos painéis na cena 3D, preservando transparências, gradientes e reflexos para evitar artefatos de composição em tamanhos diferentes.
+
+## Publicação verificada — 28/10/2026
+
+Site publicado em https://miguelcruver.github.io/Glide/. Workflow 40790376612, tentativa 2: sucesso. Página respondeu HTTP 200. Configuração e conteúdo enviados nos commits 896704d e 5f1727b.
+
+Verificação no navegador público: efeito 3D ativo por padrão, consulta da release concluída e mensagem de download disponível. Clique no botão baixou Glide-Setup-v2.0.0.exe para Downloads. Arquivo disponível na release v2.0.0, marcada como pré-lançamento. O executável não foi aberto nem instalado.
+
+Esta publicação resolve as pendências anteriores de hospedagem e conexão do download. Permanecem as limitações anteriormente registradas sobre validação do app e ambientes não testados.
