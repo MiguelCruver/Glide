@@ -29,6 +29,7 @@ git add .
 $changes = git status --porcelain
 if ($changes) {
     git commit -m $CommitMessage
+    git pull --rebase origin master
     git push origin master
     Write-Host "Sincronizado com o GitHub com sucesso!" -ForegroundColor Green
 } else {
