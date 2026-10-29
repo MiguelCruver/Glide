@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Input;
 using Glide.App.Services;
 using Glide.Core.Enums;
+using Glide.Core.Models;
 
 namespace Glide.App.ViewModels;
 
@@ -36,6 +37,12 @@ public class HomeViewModel : ViewModelBase, IDisposable
             if (param is not string serviceKey) return;
             HandleServiceConnect(serviceKey);
         });
+
+        DisconnectServiceCommand = new RelayCommand(param =>
+        {
+            if (param is not string serviceKey) return;
+            HandleServiceDisconnect(serviceKey);
+        });
     }
 
     private void UpdateFromSnapshot(PerformanceSnapshot snap)
@@ -48,11 +55,32 @@ public class HomeViewModel : ViewModelBase, IDisposable
     private void HandleServiceConnect(string serviceKey)
     {
         var settings = _settingsService.Settings;
-        if (!settings.ConnectedAccounts.Contains(serviceKey))
+        bool isNewConnection = !settings.ConnectedAccounts.Contains(serviceKey);
+        if (isNewConnection)
         {
             settings.ConnectedAccounts.Add(serviceKey);
             _settingsService.SaveSettings(settings);
             NotifyAccountProperties();
+
+            string serviceName = serviceKey switch
+            {
+                "google" => "Google (YouTube & Gmail)",
+                "spotify" => "Spotify",
+                "steam" => "Steam Community",
+                "instagram" => "Instagram",
+                "twitter" => "X (Twitter)",
+                _ => serviceKey
+            };
+
+            NotificationService.Instance.AddNotification(new UnifiedNotification(
+                Id: Guid.NewGuid().ToString(),
+                ServiceId: serviceKey,
+                Sender: serviceName,
+                Title: "Conta Conectada",
+                Snippet: $"Sua conta {serviceName} foi conectada com sucesso ao Glide.",
+                Timestamp: DateTime.Now,
+                Category: "Jogos"
+            ));
         }
 
         switch (serviceKey)
@@ -72,6 +100,37 @@ public class HomeViewModel : ViewModelBase, IDisposable
             case "twitter":
                 _mainVm.NavigateCommand.Execute(GlideModule.Video);
                 break;
+        }
+    }
+
+    private void HandleServiceDisconnect(string serviceKey)
+    {
+        var settings = _settingsService.Settings;
+        if (settings.ConnectedAccounts.Contains(serviceKey))
+        {
+            settings.ConnectedAccounts.Remove(serviceKey);
+            _settingsService.SaveSettings(settings);
+            NotifyAccountProperties();
+
+            string serviceName = serviceKey switch
+            {
+                "google" => "Google",
+                "spotify" => "Spotify",
+                "steam" => "Steam",
+                "instagram" => "Instagram",
+                "twitter" => "X (Twitter)",
+                _ => serviceKey
+            };
+
+            NotificationService.Instance.AddNotification(new UnifiedNotification(
+                Id: Guid.NewGuid().ToString(),
+                ServiceId: "system",
+                Sender: "Glide Hub",
+                Title: "Conta Desconectada",
+                Snippet: $"A sincronização com {serviceName} foi desativada.",
+                Timestamp: DateTime.Now,
+                Category: "Sistema"
+            ));
         }
     }
 
@@ -117,13 +176,14 @@ public class HomeViewModel : ViewModelBase, IDisposable
     public bool IsInstagramConnected => _settingsService.Settings.ConnectedAccounts.Contains("instagram");
     public bool IsTwitterConnected => _settingsService.Settings.ConnectedAccounts.Contains("twitter");
 
-    public string GoogleConnectStatusText => IsGoogleConnected ? "✓ Conectado (Abrir)" : "Conectar Google";
-    public string SpotifyConnectStatusText => IsSpotifyConnected ? "✓ Conectado (Abrir)" : "Conectar Spotify";
-    public string SteamConnectStatusText => IsSteamConnected ? "✓ Conectado (Abrir)" : "Conectar Steam";
-    public string InstagramConnectStatusText => IsInstagramConnected ? "✓ Conectado (Abrir)" : "Conectar Instagram";
-    public string TwitterConnectStatusText => IsTwitterConnected ? "✓ Conectado (Abrir)" : "Conectar X (Twitter)";
+    public string GoogleConnectStatusText => IsGoogleConnected ? "✓ Conectado" : "Conectar Google";
+    public string SpotifyConnectStatusText => IsSpotifyConnected ? "✓ Conectado" : "Conectar Spotify";
+    public string SteamConnectStatusText => IsSteamConnected ? "✓ Conectado" : "Conectar Steam";
+    public string InstagramConnectStatusText => IsInstagramConnected ? "✓ Conectado" : "Conectar Instagram";
+    public string TwitterConnectStatusText => IsTwitterConnected ? "✓ Conectado" : "Conectar X (Twitter)";
 
     public ICommand ConnectServiceCommand { get; }
+    public ICommand DisconnectServiceCommand { get; }
 
     public void Dispose()
     {

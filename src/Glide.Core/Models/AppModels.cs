@@ -82,5 +82,5 @@ public class AppSettings
     public bool AutoEcoModeInBackground { get; set; } = true;
     public float MicSensitivityThreshold { get; set; } = 0.015f;
     public bool RealtimeMetricsEnabled { get; set; } = true;
-    public List<string> ConnectedAccounts { get; set; } = new() { "google", "spotify" };
+    public List<string> ConnectedAccounts { get; set; } = new();
 }

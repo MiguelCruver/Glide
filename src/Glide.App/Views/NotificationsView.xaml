@@ -4,6 +4,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="900">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="30,24,30,30">
             
@@ -30,9 +33,9 @@
 
                 <!-- Ações do Topo -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="➕ Simular Alerta" Style="{StaticResource SecondaryButtonStyle}"
-                            FontSize="11" Padding="10,5" Margin="0,0,8,0" Command="{Binding SimulateNotificationCommand}"
-                            ToolTip="Gera uma notificação de teste em tempo real" />
+                    <Button Content="🗑️ Limpar Todas" Style="{StaticResource SecondaryButtonStyle}"
+                            FontSize="11" Padding="10,5" Margin="0,0,8,0" Command="{Binding ClearAllCommand}"
+                            ToolTip="Exclui todo o histórico de notificações" />
                     <Button Content="{Binding DndButtonText}" Style="{StaticResource SecondaryButtonStyle}"
                             FontSize="11" Padding="10,5" Margin="0,0,8,0" Command="{Binding ToggleDoNotDisturbCommand}" />
                     <Button Content="✓ Marcar Lidas" Style="{StaticResource PrimaryButtonStyle}"
@@ -60,7 +63,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Content="🎮 Jogos &amp; Steam"
+                    <Button Content="🎮 Jogos &amp; Contas"
                             Height="28" FontSize="11" Padding="12,0" Margin="0,0,4,0"
                             Command="{Binding FilterCommand}" CommandParameter="Jogos">
                         <Button.Style>
@@ -76,7 +79,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Content="💬 Comunicação (Discord / WhatsApp)"
+                    <Button Content="🎙️ Glide Connect"
                             Height="28" FontSize="11" Padding="12,0" Margin="0,0,4,0"
                             Command="{Binding FilterCommand}" CommandParameter="Comunicação">
                         <Button.Style>
@@ -110,6 +113,18 @@
                 </StackPanel>
             </Border>
 
+            <!-- Estado Vazio (Sem Notificações) -->
+            <Border Style="{StaticResource GlideCardBorderStyle}" Padding="40" Margin="0,10,0,20"
+                    Visibility="{Binding HasNoNotifications, Converter={StaticResource BoolToVis}}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="📭" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,12" />
+                    <TextBlock Text="Nenhuma notificação no momento" Foreground="{StaticResource GlideTextPrimaryBrush}"
+                               FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,6" />
+                    <TextBlock Text="Seu histórico está limpo. As notificações reais aparecerão aqui quando você conectar suas contas ou receber eventos do sistema e do Glide Connect."
+                               Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="12" TextAlignment="Center" MaxWidth="500" />
+                </StackPanel>
+            </Border>
+
             <!-- Lista de Notificações -->
             <ItemsControl ItemsSource="{Binding FilteredNotifications}" Margin="0,0,0,20">
                 <ItemsControl.ItemTemplate>
@@ -134,11 +149,14 @@
                                                     <DataTrigger Binding="{Binding ServiceId}" Value="steam">
                                                         <Setter Property="Text" Value="🎮" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ServiceId}" Value="discord">
-                                                        <Setter Property="Text" Value="💬" />
+                                                    <DataTrigger Binding="{Binding ServiceId}" Value="spotify">
+                                                        <Setter Property="Text" Value="🎵" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ServiceId}" Value="whatsapp">
-                                                        <Setter Property="Text" Value="📱" />
+                                                    <DataTrigger Binding="{Binding ServiceId}" Value="google">
+                                                        <Setter Property="Text" Value="▶️" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ServiceId}" Value="connect">
+                                                        <Setter Property="Text" Value="🎙️" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding ServiceId}" Value="system">
                                                         <Setter Property="Text" Value="🛡️" />

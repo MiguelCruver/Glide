@@ -47,32 +47,8 @@ public class NotificationService
         }
         catch {}
 
-        // Notificações reais do sistema e conexões
-        _notifications.AddRange(new[]
-        {
-            new UnifiedNotification(
-                Id: "notif-system-1",
-                ServiceId: "system",
-                Sender: "Glide Hub",
-                Title: "Glide v2.0 Ativo",
-                Snippet: "Aceleração de hardware e isolamento de segurança em execução.",
-                Timestamp: DateTime.Now.AddMinutes(-5),
-                IsRead: false,
-                Category: "Sistema"
-            ),
-            new UnifiedNotification(
-                Id: "notif-system-2",
-                ServiceId: "system",
-                Sender: "Glide Connect",
-                Title: "Rede P2P Pronta",
-                Snippet: "Salas de voz e chat criptografadas prontas para uso online.",
-                Timestamp: DateTime.Now.AddMinutes(-12),
-                IsRead: true,
-                Category: "Comunicação"
-            )
-        });
-
-        SaveNotifications();
+        // Inicializa 100% limpo quando o usuário instala pela primeira vez.
+        // As notificações são geradas exclusivamente por conexões reais e atividade do usuário.
     }
 
     public void SaveNotifications()

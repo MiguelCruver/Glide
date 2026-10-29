@@ -160,7 +160,7 @@ public class ConnectServicesTests
         {
             var notifService = new NotificationService(tempPath);
             var initial = notifService.GetAll();
-            Assert.NotEmpty(initial);
+            Assert.Empty(initial);
 
             var custom = new UnifiedNotification(
                 Id: "test-n1",

@@ -243,6 +243,107 @@
                 </StackPanel>
             </Border>
 
+            <!-- SEÇÃO 7: ATUALIZAÇÕES DO APLICATIVO (IN-APP UPDATER GITHUB) -->
+            <Border Style="{StaticResource GlideCardBorderStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <TextBlock Text="🔄" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                <TextBlock Text="Atualizações do Sistema" Foreground="{StaticResource GlideTextPrimaryBrush}"
+                                           FontSize="15" FontWeight="Bold" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="Verifique novas versões publicadas no repositório oficial do GitHub e atualize diretamente com 1 clique."
+                                       Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="12" />
+                        </StackPanel>
+
+                        <Button Grid.Column="1" Content="Verificar Atualizações" Style="{StaticResource SecondaryButtonStyle}"
+                                Height="32" FontSize="11" Padding="14,0" Command="{Binding CheckForUpdateCommand}"
+                                IsEnabled="{Binding CanCheckForUpdate}" />
+                    </Grid>
+
+                    <!-- Status da Versão Atual -->
+                    <Border Background="#121722" BorderBrush="{StaticResource GlideBorderSubtleBrush}" BorderThickness="1"
+                            CornerRadius="6" Padding="12,10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{Binding CurrentVersionText, StringFormat='Versão Instalada: {0}'}"
+                                           Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="12" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding UpdateStatusMessage}" Foreground="{StaticResource GlideTextMutedBrush}"
+                                           FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Border Grid.Column="1" Background="#162232" BorderBrush="{StaticResource GlideAccentBlueBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
+                                <TextBlock Text="OFICIAL GITHUB" Foreground="{StaticResource GlideAccentBlueBrush}" FontSize="10" FontWeight="Bold" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Banner de Atualização Disponível (Quando detectada nova release) -->
+                    <Border BorderBrush="{StaticResource GlideAccentMintBrush}" BorderThickness="1"
+                            Background="#142621" CornerRadius="8" Padding="14">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasUpdateAvailable}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding LatestVersionTag, StringFormat='🎉 Nova Versão Disponível: {0}'}"
+                                               Foreground="{StaticResource GlideAccentMintBrush}" FontSize="13" FontWeight="Bold" />
+                                    <TextBlock Text="O instalador oficial foi localizado. Clique ao lado para baixar e reiniciar o Glide."
+                                               Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="11" Margin="0,2,0,0" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="🚀 Baixar e Atualizar" Style="{StaticResource PrimaryButtonStyle}"
+                                        Height="32" Padding="14,0" Command="{Binding InstallUpdateCommand}"
+                                        IsEnabled="{Binding CanInstallUpdate}" />
+                            </Grid>
+
+                            <!-- Barra de Progresso do Download -->
+                            <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDownloadingUpdate}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding DownloadProgressPercentage}"
+                                             Height="6" Background="#0C1410" Foreground="{StaticResource GlideAccentMintBrush}"
+                                             BorderThickness="0" Margin="0,0,0,4" />
+                                <TextBlock Text="{Binding DownloadProgressPercentage, StringFormat='Baixando: {0}%'}"
+                                           Foreground="{StaticResource GlideAccentMintBrush}" FontSize="10" HorizontalAlignment="Right" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
             <!-- SEÇÃO FINAL: ISOLAMENTO DE SEGURANÇA (COM CONFIRMAÇÃO OBRIGATÓRIA) -->
             <Border BorderBrush="{StaticResource GlideDangerBrush}" BorderThickness="1"
                     Background="#16131A" CornerRadius="10" Padding="18" Margin="0,0,0,16">

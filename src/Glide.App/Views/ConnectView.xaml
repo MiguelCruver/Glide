@@ -23,33 +23,102 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <TextBlock Text="🎙️ GLIDE CONNECT" Foreground="{StaticResource GlideAccentMintBrush}"
                                    FontSize="18" FontWeight="Bold" Margin="0,0,12,0" VerticalAlignment="Center" />
+                        
+                        <!-- Badge Quando Conectado -->
                         <Border Background="#1A2D28" BorderBrush="{StaticResource GlideAccentMintBrush}"
-                                BorderThickness="1" CornerRadius="10" Padding="8,2">
-                            <TextBlock Text="SALA PRIVADA" Foreground="{StaticResource GlideAccentMintBrush}" FontSize="10" FontWeight="Bold" />
+                                BorderThickness="1" CornerRadius="10" Padding="8,2" VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInRoom}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{Binding RoomCode, StringFormat='🟢 CONECTADO NA SALA {0}'}" Foreground="{StaticResource GlideAccentMintBrush}" FontSize="10" FontWeight="Bold" />
+                        </Border>
+
+                        <!-- Badge Quando Desconectado -->
+                        <Border Background="#251C1A" BorderBrush="{StaticResource GlideWarningBrush}"
+                                BorderThickness="1" CornerRadius="10" Padding="8,2" VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInRoom}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="⚪ FORA DE UMA SALA" Foreground="{StaticResource GlideWarningBrush}" FontSize="10" FontWeight="Bold" />
                         </Border>
                     </StackPanel>
                     <TextBlock Text="Comunicação de voz direta, histórico SQLite 100% no seu PC e compartilhamento de imagens."
                                Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="12" />
                 </StackPanel>
 
-                <!-- Status da Sala e Código -->
+                <!-- Painel de Ações: QUANDO NÃO ESTÁ EM SALA (Entrar ou Criar) -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsInRoom}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <TextBox Text="{Binding TargetRoomCode, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource GlideTextBoxStyle}" Width="140" Height="34"
+                             VerticalContentAlignment="Center" Margin="0,0,8,0"
+                             ToolTip="Digite o código da sala (ex: GLIDE-1234)" />
+
+                    <Button Content="➜ Entrar na Sala" Style="{StaticResource PrimaryButtonStyle}"
+                            Height="34" FontSize="11" Padding="12,0" Margin="0,0,8,0"
+                            Command="{Binding JoinRoomCommand}" ToolTip="Ingressar na sala com o código digitado" />
+
+                    <Button Content="➕ Criar Nova Sala" Style="{StaticResource SecondaryButtonStyle}"
+                            Height="34" FontSize="11" Padding="12,0"
+                            Command="{Binding CreateRoomCommand}" ToolTip="Criar uma sala privada instantânea com novo código" />
+                </StackPanel>
+
+                <!-- Painel de Ações: QUANDO JÁ ESTÁ CONECTADO NA SALA -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsInRoom}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
                     <Border Background="#121722" BorderBrush="{StaticResource GlideBorderBrush}"
-                            BorderThickness="1" CornerRadius="6" Padding="12,6" Margin="0,0,10,0">
+                            BorderThickness="1" CornerRadius="6" Padding="12,6" Margin="0,0,8,0">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Código da Sala: " Foreground="{StaticResource GlideTextMutedBrush}" FontSize="12" VerticalAlignment="Center" />
+                            <TextBlock Text="Sala: " Foreground="{StaticResource GlideTextMutedBrush}" FontSize="12" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding RoomCode}" Foreground="{StaticResource GlideAccentBlueBrush}"
                                        FontSize="12" FontWeight="Bold" VerticalAlignment="Center" />
-                            <Button Content="⟳" Style="{StaticResource SecondaryButtonStyle}"
-                                    Width="22" Height="22" FontSize="10" Padding="0" Margin="8,0,0,0"
-                                    Command="{Binding GenerateRoomCodeCommand}" ToolTip="Gerar Nova Sala" />
                         </StackPanel>
                     </Border>
-                    <Button Content="Compartilhar Código" Style="{StaticResource SecondaryButtonStyle}"
-                            FontSize="11" Padding="10,6" Margin="0,0,8,0"
-                            Command="{Binding CopyRoomCodeCommand}" ToolTip="Copiar código para a área de transferência" />
-                    <Button Content="Limpar Sala" Style="{StaticResource SecondaryButtonStyle}"
-                            Foreground="{StaticResource GlideDangerBrush}" FontSize="11" Padding="10,6"
+
+                    <Button Content="📋 Copiar Código" Style="{StaticResource SecondaryButtonStyle}"
+                            Height="34" FontSize="11" Padding="10,0" Margin="0,0,8,0"
+                            Command="{Binding CopyRoomCodeCommand}" ToolTip="Copiar código para enviar a amigos" />
+
+                    <Button Content="🚪 Sair da Sala" Style="{StaticResource SecondaryButtonStyle}"
+                            Height="34" FontSize="11" Padding="10,0" Margin="0,0,8,0"
+                            Command="{Binding LeaveRoomCommand}" ToolTip="Desconectar-se da sala atual" />
+
+                    <Button Content="🗑️ Limpar Sala" Style="{StaticResource SecondaryButtonStyle}"
+                            Foreground="{StaticResource GlideDangerBrush}" Height="34" FontSize="11" Padding="10,0"
                             Command="{Binding ClearHistoryCommand}" ToolTip="Apagar mensagens e anexos locais desta sala" />
                 </StackPanel>
             </Grid>

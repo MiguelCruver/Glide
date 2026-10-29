@@ -116,7 +116,7 @@
                                 <TextBlock Text="Central de Notificações" FontSize="16" FontWeight="Bold" 
                                            Foreground="{StaticResource GlideTextPrimaryBrush}" VerticalAlignment="Center" />
                             </StackPanel>
-                            <TextBlock Text="Gmail via API oficial com consumo quase zero; WhatsApp e Discord em sandbox sem links externos perigosos."
+                            <TextBlock Text="Alertas do sistema, convites de salas do Glide Connect e eventos de gaming com baixíssimo consumo de memória."
                                        Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,16" />
                             <Button Content="Ver Notificações" Style="{StaticResource SecondaryButtonStyle}"
                                     HorizontalAlignment="Left" Command="{Binding NavigateCommand}"
@@ -167,15 +167,52 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
-                                    <TextBlock Text="🌐" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="Conta Google" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
-                                </StackPanel>
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="🌐" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="Conta Google" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
                                 <TextBlock Grid.Row="1" Text="YouTube, YouTube Music e Gmail sincronizados com login único."
                                            Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" />
-                                <Button Grid.Row="2" Content="{Binding GoogleConnectStatusText}"
-                                        Style="{StaticResource SecondaryButtonStyle}" Height="30" FontSize="11"
-                                        Command="{Binding ConnectServiceCommand}" CommandParameter="google" />
+                                
+                                <Button Grid.Row="2" Content="Conectar Google"
+                                        Height="30" FontSize="11"
+                                        Command="{Binding ConnectServiceCommand}" CommandParameter="google">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsGoogleConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <Grid Grid.Row="2">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsGoogleConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="✓ Abrir" Style="{StaticResource SecondaryButtonStyle}"
+                                            Height="30" FontSize="11" Margin="0,0,6,0"
+                                            Command="{Binding ConnectServiceCommand}" CommandParameter="google" />
+                                    <Button Grid.Column="1" Content="Desconectar" Style="{StaticResource SecondaryButtonStyle}"
+                                            Foreground="{StaticResource GlideDangerBrush}" Height="30" FontSize="10" Padding="8,0"
+                                            Command="{Binding DisconnectServiceCommand}" CommandParameter="google" />
+                                </Grid>
                             </Grid>
                         </Border>
 
@@ -187,15 +224,52 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
-                                    <TextBlock Text="🎧" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="Spotify" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
-                                </StackPanel>
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="🎧" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="Spotify" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
                                 <TextBlock Grid.Row="1" Text="Playlists, podcasts e controles de reprodução direta no miniplayer."
                                            Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" />
-                                <Button Grid.Row="2" Content="{Binding SpotifyConnectStatusText}"
-                                        Style="{StaticResource SecondaryButtonStyle}" Height="30" FontSize="11"
-                                        Command="{Binding ConnectServiceCommand}" CommandParameter="spotify" />
+
+                                <Button Grid.Row="2" Content="Conectar Spotify"
+                                        Height="30" FontSize="11"
+                                        Command="{Binding ConnectServiceCommand}" CommandParameter="spotify">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSpotifyConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <Grid Grid.Row="2">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSpotifyConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="✓ Abrir" Style="{StaticResource SecondaryButtonStyle}"
+                                            Height="30" FontSize="11" Margin="0,0,6,0"
+                                            Command="{Binding ConnectServiceCommand}" CommandParameter="spotify" />
+                                    <Button Grid.Column="1" Content="Desconectar" Style="{StaticResource SecondaryButtonStyle}"
+                                            Foreground="{StaticResource GlideDangerBrush}" Height="30" FontSize="10" Padding="8,0"
+                                            Command="{Binding DisconnectServiceCommand}" CommandParameter="spotify" />
+                                </Grid>
                             </Grid>
                         </Border>
 
@@ -207,15 +281,52 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
-                                    <TextBlock Text="🎮" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="Steam Community" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
-                                </StackPanel>
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="🎮" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="Steam Community" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
                                 <TextBlock Grid.Row="1" Text="Status de amigos, convites de lobby e notificações de updates do CS2."
                                            Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" />
-                                <Button Grid.Row="2" Content="{Binding SteamConnectStatusText}"
-                                        Style="{StaticResource SecondaryButtonStyle}" Height="30" FontSize="11"
-                                        Command="{Binding ConnectServiceCommand}" CommandParameter="steam" />
+
+                                <Button Grid.Row="2" Content="Conectar Steam"
+                                        Height="30" FontSize="11"
+                                        Command="{Binding ConnectServiceCommand}" CommandParameter="steam">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSteamConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <Grid Grid.Row="2">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSteamConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="✓ Abrir" Style="{StaticResource SecondaryButtonStyle}"
+                                            Height="30" FontSize="11" Margin="0,0,6,0"
+                                            Command="{Binding ConnectServiceCommand}" CommandParameter="steam" />
+                                    <Button Grid.Column="1" Content="Desconectar" Style="{StaticResource SecondaryButtonStyle}"
+                                            Foreground="{StaticResource GlideDangerBrush}" Height="30" FontSize="10" Padding="8,0"
+                                            Command="{Binding DisconnectServiceCommand}" CommandParameter="steam" />
+                                </Grid>
                             </Grid>
                         </Border>
                     </UniformGrid>
@@ -229,15 +340,52 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
-                                    <TextBlock Text="📸" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="Instagram" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
-                                </StackPanel>
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="📸" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="Instagram" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
                                 <TextBlock Grid.Row="1" Text="Acesso a reels, direct messages e feed durante pausas ou no 2º monitor."
                                            Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" />
-                                <Button Grid.Row="2" Content="{Binding InstagramConnectStatusText}"
-                                        Style="{StaticResource SecondaryButtonStyle}" Height="30" FontSize="11"
-                                        Command="{Binding ConnectServiceCommand}" CommandParameter="instagram" />
+
+                                <Button Grid.Row="2" Content="Conectar Instagram"
+                                        Height="30" FontSize="11"
+                                        Command="{Binding ConnectServiceCommand}" CommandParameter="instagram">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsInstagramConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <Grid Grid.Row="2">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsInstagramConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="✓ Abrir" Style="{StaticResource SecondaryButtonStyle}"
+                                            Height="30" FontSize="11" Margin="0,0,6,0"
+                                            Command="{Binding ConnectServiceCommand}" CommandParameter="instagram" />
+                                    <Button Grid.Column="1" Content="Desconectar" Style="{StaticResource SecondaryButtonStyle}"
+                                            Foreground="{StaticResource GlideDangerBrush}" Height="30" FontSize="10" Padding="8,0"
+                                            Command="{Binding DisconnectServiceCommand}" CommandParameter="instagram" />
+                                </Grid>
                             </Grid>
                         </Border>
 
@@ -249,15 +397,52 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
-                                    <TextBlock Text="🕇" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                    <TextBlock Text="X (Twitter)" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
-                                </StackPanel>
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="🕇" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="X (Twitter)" Foreground="{StaticResource GlideTextPrimaryBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
                                 <TextBlock Grid.Row="1" Text="Notícias de esports, clipes da comunidade e tendências em tempo real."
                                            Foreground="{StaticResource GlideTextSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" />
-                                <Button Grid.Row="2" Content="{Binding TwitterConnectStatusText}"
-                                        Style="{StaticResource SecondaryButtonStyle}" Height="30" FontSize="11"
-                                        Command="{Binding ConnectServiceCommand}" CommandParameter="twitter" />
+
+                                <Button Grid.Row="2" Content="Conectar X (Twitter)"
+                                        Height="30" FontSize="11"
+                                        Command="{Binding ConnectServiceCommand}" CommandParameter="twitter">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsTwitterConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <Grid Grid.Row="2">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsTwitterConnected}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="✓ Abrir" Style="{StaticResource SecondaryButtonStyle}"
+                                            Height="30" FontSize="11" Margin="0,0,6,0"
+                                            Command="{Binding ConnectServiceCommand}" CommandParameter="twitter" />
+                                    <Button Grid.Column="1" Content="Desconectar" Style="{StaticResource SecondaryButtonStyle}"
+                                            Foreground="{StaticResource GlideDangerBrush}" Height="30" FontSize="10" Padding="8,0"
+                                            Command="{Binding DisconnectServiceCommand}" CommandParameter="twitter" />
+                                </Grid>
                             </Grid>
                         </Border>
                     </UniformGrid>

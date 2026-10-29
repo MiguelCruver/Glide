@@ -49,27 +49,10 @@ public class NotificationsViewModel : ViewModelBase
             }
         });
 
-        SimulateNotificationCommand = new RelayCommand(() =>
+        ClearAllCommand = new RelayCommand(() =>
         {
-            var rnd = new Random();
-            string[] titles = { "Lobby pronto no CS2", "Convite de amizade Steam", "Nova mensagem no WhatsApp", "Alerta de Desempenho Glide" };
-            string[] snippets = { "A partida foi encontrada! Aceite para entrar.", "Jogador convidou você para o clã.", "Mensagem de voz recebida no chat privado.", "GPU e RAM otimizadas com sucesso para 144 FPS." };
-            string[] categories = { "Jogos", "Jogos", "Comunicação", "Sistema" };
-            string[] services = { "steam", "steam", "whatsapp", "system" };
-
-            int idx = rnd.Next(titles.Length);
-            var n = new UnifiedNotification(
-                Id: Guid.NewGuid().ToString(),
-                ServiceId: services[idx],
-                Sender: "Glide Notifier",
-                Title: titles[idx],
-                Snippet: snippets[idx],
-                Timestamp: DateTime.Now,
-                IsRead: false,
-                Category: categories[idx]
-            );
-
-            _notificationService.AddNotification(n);
+            _notificationService.ClearAll();
+            RefreshFilteredList();
         });
 
         DeleteNotificationCommand = new RelayCommand(param =>
@@ -138,12 +121,17 @@ public class NotificationsViewModel : ViewModelBase
         }
 
         OnPropertyChanged(nameof(UnreadCount));
+        OnPropertyChanged(nameof(HasNoNotifications));
+        OnPropertyChanged(nameof(HasNotifications));
     }
+
+    public bool HasNoNotifications => FilteredNotifications.Count == 0;
+    public bool HasNotifications => FilteredNotifications.Count > 0;
 
     public ICommand ToggleDoNotDisturbCommand { get; }
     public ICommand MarkAllAsReadCommand { get; }
     public ICommand FilterCommand { get; }
-    public ICommand SimulateNotificationCommand { get; }
+    public ICommand ClearAllCommand { get; }
     public ICommand DeleteNotificationCommand { get; }
     public ICommand MarkAsReadCommand { get; }
 }
@@ -157,6 +145,7 @@ public class ConnectViewModel : ViewModelBase, IDisposable
     private readonly GlideOnlineP2PService _p2pService;
     private readonly string _localUserId = $"usr_{Guid.NewGuid():N}";
     private string _roomCode = "GLIDE-7782";
+    private string _targetRoomCode = string.Empty;
     private bool _isInRoom = false;
     private bool _isMuted = false;
     private bool _isDeafened = false;
@@ -234,6 +223,15 @@ public class ConnectViewModel : ViewModelBase, IDisposable
                 else
                 {
                     Participants.Add(peer);
+                    NotificationService.Instance.AddNotification(new UnifiedNotification(
+                        Id: Guid.NewGuid().ToString(),
+                        ServiceId: "connect",
+                        Sender: peer.DisplayName,
+                        Title: "Amigo Conectado",
+                        Snippet: $"{peer.DisplayName} ingressou na sua sala do Glide Connect.",
+                        Timestamp: DateTime.Now,
+                        Category: "Comunicação"
+                    ));
                 }
             });
         };
@@ -246,7 +244,17 @@ public class ConnectViewModel : ViewModelBase, IDisposable
                 {
                     if (Participants[i].Id == peerId)
                     {
+                        string leftName = Participants[i].DisplayName;
                         Participants.RemoveAt(i);
+                        NotificationService.Instance.AddNotification(new UnifiedNotification(
+                            Id: Guid.NewGuid().ToString(),
+                            ServiceId: "connect",
+                            Sender: "Glide Connect",
+                            Title: "Amigo Desconectou",
+                            Snippet: $"{leftName} saiu da sala.",
+                            Timestamp: DateTime.Now,
+                            Category: "Comunicação"
+                        ));
                         break;
                     }
                 }
@@ -369,6 +377,7 @@ public class ConnectViewModel : ViewModelBase, IDisposable
         {
             var rnd = new Random();
             RoomCode = $"GLIDE-{rnd.Next(1000, 9999)}";
+            TargetRoomCode = RoomCode;
             LoadRoomHistory();
             if (IsInRoom && Participants.Count > 0)
             {
@@ -376,34 +385,97 @@ public class ConnectViewModel : ViewModelBase, IDisposable
             }
         });
 
+        CreateRoomCommand = new RelayCommand(async () =>
+        {
+            var rnd = new Random();
+            RoomCode = $"GLIDE-{rnd.Next(1000, 9999)}";
+            TargetRoomCode = RoomCode;
+            IsInRoom = true;
+            LoadRoomHistory();
+
+            if (Participants.Count > 0)
+            {
+                await _p2pService.ConnectToRoomAsync(RoomCode, Participants[0]);
+            }
+
+            NotificationService.Instance.AddNotification(new UnifiedNotification(
+                Id: Guid.NewGuid().ToString(),
+                ServiceId: "connect",
+                Sender: "Glide Connect",
+                Title: "Sala Criada com Sucesso",
+                Snippet: $"Você criou e entrou na sala {RoomCode}. Convide amigos compartilhando seu código.",
+                Timestamp: DateTime.Now,
+                Category: "Comunicação"
+            ));
+        });
+
         CopyRoomCodeCommand = new RelayCommand(() =>
         {
             try
             {
                 Clipboard.SetText(RoomCode);
+                NotificationService.Instance.AddNotification(new UnifiedNotification(
+                    Id: Guid.NewGuid().ToString(),
+                    ServiceId: "connect",
+                    Sender: "Glide Connect",
+                    Title: "Código Copiado",
+                    Snippet: $"Código {RoomCode} copiado para a área de transferência.",
+                    Timestamp: DateTime.Now,
+                    Category: "Comunicação"
+                ));
             }
             catch {}
         });
 
-        JoinRoomCommand = new RelayCommand(() =>
+        JoinRoomCommand = new RelayCommand(async () =>
         {
+            string codeToJoin = !string.IsNullOrWhiteSpace(TargetRoomCode) 
+                ? TargetRoomCode.Trim().ToUpperInvariant() 
+                : RoomCode.Trim().ToUpperInvariant();
+
+            if (string.IsNullOrWhiteSpace(codeToJoin)) return;
+
+            RoomCode = codeToJoin;
             IsInRoom = true;
+            LoadRoomHistory();
+
             if (Participants.Count > 0)
             {
-                _ = _p2pService.ConnectToRoomAsync(RoomCode, Participants[0]);
+                await _p2pService.ConnectToRoomAsync(RoomCode, Participants[0]);
             }
+
+            NotificationService.Instance.AddNotification(new UnifiedNotification(
+                Id: Guid.NewGuid().ToString(),
+                ServiceId: "connect",
+                Sender: "Glide Connect",
+                Title: "Entrou na Sala",
+                Snippet: $"Você conectou-se com sucesso à sala {RoomCode}.",
+                Timestamp: DateTime.Now,
+                Category: "Comunicação"
+            ));
         });
 
-        LeaveRoomCommand = new RelayCommand(() =>
+        LeaveRoomCommand = new RelayCommand(async () =>
         {
+            string oldRoom = RoomCode;
             IsInRoom = false;
-            _ = _p2pService.LeaveRoomAsync();
+            await _p2pService.LeaveRoomAsync();
 
             // Remove todos os participantes remotos, preservando apenas o usuário local
             while (Participants.Count > 1)
             {
                 Participants.RemoveAt(Participants.Count - 1);
             }
+
+            NotificationService.Instance.AddNotification(new UnifiedNotification(
+                Id: Guid.NewGuid().ToString(),
+                ServiceId: "connect",
+                Sender: "Glide Connect",
+                Title: "Desconectado",
+                Snippet: $"Você saiu da sala {oldRoom}.",
+                Timestamp: DateTime.Now,
+                Category: "Comunicação"
+            ));
         });
     }
 
@@ -487,6 +559,12 @@ public class ConnectViewModel : ViewModelBase, IDisposable
         set => SetProperty(ref _roomCode, value);
     }
 
+    public string TargetRoomCode
+    {
+        get => _targetRoomCode;
+        set => SetProperty(ref _targetRoomCode, value);
+    }
+
     public bool IsInRoom
     {
         get => _isInRoom;
@@ -545,6 +623,7 @@ public class ConnectViewModel : ViewModelBase, IDisposable
     public ICommand SendMessageCommand { get; }
     public ICommand ClearHistoryCommand { get; }
     public ICommand GenerateRoomCodeCommand { get; }
+    public ICommand CreateRoomCommand { get; }
     public ICommand CopyRoomCodeCommand { get; }
     public ICommand JoinRoomCommand { get; }
     public ICommand LeaveRoomCommand { get; }
@@ -570,6 +649,16 @@ public class SettingsViewModel : ViewModelBase
     private string? _avatarPath;
     private string? _bannerPath;
     private string _saveProfileFeedback = string.Empty;
+
+    // Atualizador Integrado (GitHub Releases)
+    private string _updateStatusMessage = "Versão oficial instalada. Clique para verificar novas atualizações.";
+    private bool _isCheckingUpdate = false;
+    private bool _hasUpdateAvailable = false;
+    private string? _latestVersionTag = null;
+    private string? _updateDownloadUrl = null;
+    private string? _releaseNotes = null;
+    private int _downloadProgressPercentage = 0;
+    private bool _isDownloadingUpdate = false;
 
     public SettingsViewModel(MainViewModel mainVm)
     {
@@ -609,6 +698,73 @@ public class SettingsViewModel : ViewModelBase
             {
                 _settingsService.ResetToDefaults();
                 OnPropertyChanged(string.Empty);
+            }
+        });
+
+        CheckForUpdateCommand = new RelayCommand(async () =>
+        {
+            if (IsCheckingUpdate || IsDownloadingUpdate) return;
+            IsCheckingUpdate = true;
+            UpdateStatusMessage = "Consultando GitHub Releases...";
+
+            try
+            {
+                var result = await AppUpdateService.Instance.CheckForUpdateAsync();
+                UpdateStatusMessage = result.StatusMessage;
+                HasUpdateAvailable = result.HasUpdate;
+                LatestVersionTag = result.LatestVersion;
+                UpdateDownloadUrl = result.DownloadUrl;
+                ReleaseNotes = result.ReleaseNotes;
+
+                if (result.HasUpdate)
+                {
+                    NotificationService.Instance.AddNotification(new UnifiedNotification(
+                        Id: Guid.NewGuid().ToString(),
+                        ServiceId: "system",
+                        Sender: "Glide Updater",
+                        Title: "Nova Atualização Disponível",
+                        Snippet: $"A versão {result.LatestVersion} do Glide está pronta para download e instalação.",
+                        Timestamp: DateTime.Now,
+                        Category: "Sistema"
+                    ));
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusMessage = $"Falha ao verificar atualizações: {ex.Message}";
+                HasUpdateAvailable = false;
+            }
+            finally
+            {
+                IsCheckingUpdate = false;
+            }
+        });
+
+        InstallUpdateCommand = new RelayCommand(async () =>
+        {
+            if (string.IsNullOrEmpty(UpdateDownloadUrl) || IsDownloadingUpdate) return;
+
+            IsDownloadingUpdate = true;
+            DownloadProgressPercentage = 0;
+            UpdateStatusMessage = "Baixando instalador oficial...";
+
+            var progress = new Progress<int>(pct =>
+            {
+                DownloadProgressPercentage = pct;
+                UpdateStatusMessage = $"Baixando atualização: {pct}%...";
+            });
+
+            try
+            {
+                string installerPath = await AppUpdateService.Instance.DownloadUpdateAsync(UpdateDownloadUrl, progress);
+                UpdateStatusMessage = "Download concluído! Iniciando instalação...";
+                await Task.Delay(400);
+                AppUpdateService.Instance.LaunchInstallerAndShutdown(installerPath);
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusMessage = $"Erro no download: {ex.Message}";
+                IsDownloadingUpdate = false;
             }
         });
     }
@@ -802,7 +958,82 @@ public class SettingsViewModel : ViewModelBase
         }
     }
 
+    // --- Atualizações do Sistema (In-App Updater) ---
+    public string CurrentVersionText => AppUpdateService.CurrentVersion;
+
+    public string UpdateStatusMessage
+    {
+        get => _updateStatusMessage;
+        set => SetProperty(ref _updateStatusMessage, value);
+    }
+
+    public bool IsCheckingUpdate
+    {
+        get => _isCheckingUpdate;
+        set
+        {
+            if (SetProperty(ref _isCheckingUpdate, value))
+            {
+                OnPropertyChanged(nameof(CanCheckForUpdate));
+            }
+        }
+    }
+
+    public bool HasUpdateAvailable
+    {
+        get => _hasUpdateAvailable;
+        set
+        {
+            if (SetProperty(ref _hasUpdateAvailable, value))
+            {
+                OnPropertyChanged(nameof(CanInstallUpdate));
+            }
+        }
+    }
+
+    public string? LatestVersionTag
+    {
+        get => _latestVersionTag;
+        set => SetProperty(ref _latestVersionTag, value);
+    }
+
+    public string? UpdateDownloadUrl
+    {
+        get => _updateDownloadUrl;
+        set => SetProperty(ref _updateDownloadUrl, value);
+    }
+
+    public string? ReleaseNotes
+    {
+        get => _releaseNotes;
+        set => SetProperty(ref _releaseNotes, value);
+    }
+
+    public int DownloadProgressPercentage
+    {
+        get => _downloadProgressPercentage;
+        set => SetProperty(ref _downloadProgressPercentage, value);
+    }
+
+    public bool IsDownloadingUpdate
+    {
+        get => _isDownloadingUpdate;
+        set
+        {
+            if (SetProperty(ref _isDownloadingUpdate, value))
+            {
+                OnPropertyChanged(nameof(CanCheckForUpdate));
+                OnPropertyChanged(nameof(CanInstallUpdate));
+            }
+        }
+    }
+
+    public bool CanCheckForUpdate => !IsCheckingUpdate && !IsDownloadingUpdate;
+    public bool CanInstallUpdate => HasUpdateAvailable && !IsDownloadingUpdate;
+
     public ICommand SaveProfileCommand { get; }
     public ICommand ClearCacheCommand { get; }
     public ICommand ResetDefaultsCommand { get; }
+    public ICommand CheckForUpdateCommand { get; }
+    public ICommand InstallUpdateCommand { get; }
 }
