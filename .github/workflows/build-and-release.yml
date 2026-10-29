@@ -1,0 +1,62 @@
+name: Build and Release Glide
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Package Windows Installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore Glide.sln
+
+      - name: Run Automated Tests
+        run: dotnet test Glide.sln --no-restore --verbosity normal
+
+      - name: Publish Standalone Executable
+        run: |
+          dotnet publish src/Glide.App/Glide.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o release_standalone
+
+      - name: Setup Inno Setup
+        uses: flamefire/setup-innosetup@v1.3.0
+
+      - name: Compile Windows Installer
+        run: |
+          iscc installer/GlideSetup.iss
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Glide-Windows-Installer
+          path: installer_output/Glide-Setup-v2.0.0.exe
+          if-no-files-found: error
+
+      - name: Create or Update GitHub Release (on Tags)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            installer_output/Glide-Setup-v2.0.0.exe
+            release_standalone/Glide.App.exe
+          name: Glide Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true

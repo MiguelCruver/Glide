@@ -14,7 +14,7 @@ namespace Glide.UnitTests;
 
 public class ScreenshotGeneratorTests
 {
-    [Fact]
+    [Fact(Skip = "Gerador sob demanda de screenshots visuais")]
     public void GenerateAppScreenshots_ShouldExportCleanPngs()
     {
         Exception? threadEx = null;
