@@ -67,3 +67,5 @@ main{overflow-x:clip}
   .hero-copy{text-align:left}.hero h1{font-size:clamp(43px,10.5vw,66px)}
   .hero-description{max-width:460px}.scene-controls{max-width:100%}
 }
+
+.repository-button{pointer-events:auto;background:#89ddc10b;border:1px solid #84dbbe4d;color:#c3e8da;padding:12px 16px;min-height:44px;font-size:12px;margin-top:4px}.repository-button:hover{background:#89ddc11a;border-color:#84dbbeaa}
